@@ -21,6 +21,8 @@ MEMORY_ONLY_2, MEMORY_AND_DISK_2, etc.
 OFF_HEAP (experimental):
 
 '''
+
+# source /mnt/e/zhaohuiwang/dev/venvs/uv-venvs/pysparkvenv/.venv/bin/activate
 import pyspark
 from pyspark.sql import SparkSession
 from pyspark.sql import functions as F, types as T, Window as W
