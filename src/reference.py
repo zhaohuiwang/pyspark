@@ -1,6 +1,7 @@
 
 '''
 https://www.palantir.com/docs/foundry/transforms-python-spark/pyspark-overview/
+https://sparkbyexamples.com/pyspark-tutorial/
 
 Aparch Spark is a unified analytics engine for large-scale data processing. It is written primarily in Scala and run on the Jave Virtual Machine (JVM). 
 PySpark is the Python API for Apache Spark. It allows developers to interact with the Spark engine using Python. In other words, PySpark is a wrapper language that allows you to interface with an Apache Spark backend.
@@ -36,6 +37,70 @@ spark = (
 # spark.sql.adaptive.enabled
 # spark.sql.execution.arrow.pyspark.enabled
 # spark.sql.adaptive.coalescePartitions.enabled
+######################################################
+###### Read in files
+df = spark.read.csv("path_to_file.csv")
+df = spark.read.format("csv").load("path_to_file.csv")
+# or
+df = spark.read.format("org.apache.spark.sql.csv").load("path_to_file.csv")
+df2 = spark.read.option("header",True).csv("/path/zipcodes.csv")
+# Read multiple CSV files
+df = spark.read.csv("path/file1.csv,path/file2.csv,path/file3.csv")
+
+# Read all files from a directory
+df = spark.read.csv("Folder path")
+
+# Define read options
+options = {
+    "inferSchema": "True",
+    "delimiter": ","
+}
+
+# Read a CSV file with specified options
+df4 = spark.read.options(**options).csv("/path/zipcodes.csv")
+
+ 
+# Imports
+from pyspark.sql.types import StructType,StructField, StringType, IntegerType 
+from pyspark.sql.types import ArrayType, DoubleType, BooleanType
+
+# Using custom schema
+schema = StructType() \
+      .add("RecordNumber",IntegerType(),True) \
+      .add("Zipcode",IntegerType(),True) \
+      .add("City",StringType(),True) \
+      .add("State",StringType(),True) \
+      .add("Lat",DoubleType(),True) \
+      .add("Long",DoubleType(),True) \
+      .add("Decommisioned",BooleanType(),True) \
+      
+df_with_schema = spark.read.format("csv") \
+      .option("header", True) \
+      .schema(schema) \
+      .load("/path/zipcodes.csv")
+
+# Using write options
+df2.write.options(header='True', delimiter=',') \
+ .csv("/tmp/spark_output/zipcodes")
+
+
+'''
+Parquet file is a columnar storage. It also reduces data storage by 75% on average.
+
+''' 
+
+# Read and Write Parquet file using parquet()
+df.write.parquet("/tmp/out/people.parquet") 
+parDF1=spark.read.parquet("/temp/out/people.parquet")
+
+df.write.mode("append").parquet("path/to/parquet/file")
+df.write.mode("overwrite").parquet("path/to/parquet/file")
+
+
+df.write.partitionBy("gender","salary").mode("overwrite").parquet("/tmp/output/people2.parquet")
+parDF2=spark.read.parquet("/tmp/output/people2.parquet/gender=M")
+
+
 
 ######################################################
 ###### Create DataFrames
